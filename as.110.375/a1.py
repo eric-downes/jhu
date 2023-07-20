@@ -2,9 +2,17 @@ from string import ascii_uppercase as ALPH
 from collections import Counter
 import re
 
+'classes'
+
 NGramType = dict[frozenset[str], tuple[float, str]]
 
-'classes'
+@dataclass
+class Report:
+    ciphertext: str
+    plaintext: str
+    cipher: dict[str,str]
+    matched: list[str]
+    surprisal: float
 
 class SubCipher:
     def __init__(self, ciphertext:str):
@@ -13,7 +21,8 @@ class SubCipher:
         srtd = sorted(Counter(self.ciphertext).items(),
                       reverse = True, key = lambda x:x[1])
         self.byfreq = ''.join([v[0] for v in srtd])
-    def state(self, a:str|dict[str,str] = {}, b:str = None):
+    def state(self, a:str|dict[str,str] = {},
+              b:str = '', v:bool = False) -> str:
         if not b: assert isinstance(a, dict)
         else: a = self.s2d(a, b)
         cipher = self.cipher | a
@@ -22,7 +31,8 @@ class SubCipher:
             if not i % 5: s += ' '
             if not i % 50: s += '\n'
             s += cipher.get(c, c)
-        print(s)
+        if v: print(s)
+        return s
     @staticmethod
     def s2d(a:str, b:str) -> dict[str,str]:
         if len(b) == 1: b *= len(a)
@@ -36,6 +46,18 @@ class SubCipher:
         self.ngrams[n] = {k:v for k,v in sorted(
             Counter([ciphertext[i:i+n] for i in rng]),
             reverse = True, key = lambda x:x[1])}
+    def lampost_search(common:NGramType,
+                       keywords:list[str] = []) -> list[Report]:
+        cipher = {}
+        un = set(list(self.ciphertext))
+        surprisal = 0
+        for domain, (lnp, codomain) in common.items():
+            if not un - cipher.keys(): break
+            for c,p in zip(domain, codomain):
+                if c in cipher: continue
+                cipher[c] = p
+                surprisal += 
+        return Report(self.
 
 
 'fcns'
